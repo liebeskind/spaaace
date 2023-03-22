@@ -4,8 +4,6 @@ export const InteractiveAsset = async ({ id, req, position, uniqueName, urlSlug 
   try {
     const asset = Asset.create(id, { credentials: req.body });
 
-    console.log(position, uniqueName, urlSlug);
-
     const droppedAsset = await DroppedAsset.drop(asset, {
       position,
       uniqueName,
