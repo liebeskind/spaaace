@@ -90,7 +90,7 @@ export default class SpaaaceServerEngine extends ServerEngine {
 
     this.scoreData[roomName] = this.scoreData[roomName] || {};
 
-    if (!username || username === -1) {
+    if (username === -1) {
       socket.emit("error");
       return;
     }
