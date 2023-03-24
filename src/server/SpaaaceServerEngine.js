@@ -80,10 +80,6 @@ export default class SpaaaceServerEngine extends ServerEngine {
       return;
     }
 
-    if (!username || username === -1) {
-      return socket.emit("error");
-    }
-
     if (this.rooms[roomName]) {
       super.assignPlayerToRoom(socket.playerId, roomName);
     } else {
@@ -93,6 +89,11 @@ export default class SpaaaceServerEngine extends ServerEngine {
     }
 
     this.scoreData[roomName] = this.scoreData[roomName] || {};
+
+    if (!username || username === -1) {
+      socket.emit("error");
+      return;
+    }
 
     if (username) {
       socket.on("updateLeaderboard", (leaderboardArray) => debounceLeaderboard(leaderboardArray, req, username));
