@@ -2,9 +2,9 @@ import { debounce } from "throttle-debounce";
 import {
   hideLeaderboard,
   showLeaderboard,
-  // resetLeaderboard,
   updateLeaderboard,
-} from "../MetaverseCloudIntegrations/TopiaComponents/LeaderboardManager";
+  // resetLeaderboard,
+} from "../MetaverseCloudIntegrations/TopiaComponents/leaderboard";
 import { getRoomAndUsername } from "../MetaverseCloudIntegrations/TopiaComponents/RoomManager";
 import { ServerEngine } from "lance-gg";
 import url from "url";
@@ -58,7 +58,7 @@ export default class SpaaaceServerEngine extends ServerEngine {
 
     // Only update leaderboard once every 5 seconds.
     const debounceLeaderboard = debounce(
-      1000,
+      4000,
       (leaderboardArray, req, username) => {
         console.log(`${username} updating leaderboard`, leaderboardArray);
         updateLeaderboard({ leaderboardArray, req });
@@ -80,14 +80,12 @@ export default class SpaaaceServerEngine extends ServerEngine {
       return;
     }
 
-    if (this.rooms[roomName]) {
-      super.assignPlayerToRoom(socket.playerId, roomName);
-    } else {
-      super.createRoom(roomName);
-      // Prevent race condition of creating room above.
-      setTimeout(() => super.assignPlayerToRoom(socket.playerId, roomName), 500);
-    }
+    if (!this.rooms || !this.rooms[roomName]) super.createRoom(roomName);
 
+    // Prevent race condition of creating room above.
+    // setTimeout(() => super.assignPlayerToRoom(socket.playerId, roomName), 1000);
+
+    super.assignPlayerToRoom(socket.playerId, roomName);
     this.scoreData[roomName] = this.scoreData[roomName] || {};
 
     if (username === -1) {

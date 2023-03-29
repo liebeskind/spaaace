@@ -153,7 +153,11 @@ export default class SpaaaceClientEngine extends ClientEngine {
         });
 
         // Only send update if you're in the lead
-        if (this.renderer.playerShip && this.renderer.playerShip.id == parseInt(scoreArray[0].id)) {
+        if (
+          this.renderer.playerShip &&
+          scoreArray.length &&
+          this.renderer.playerShip.id == parseInt(scoreArray[0].id)
+        ) {
           this.socket.emit("updateLeaderboard", scoreArray);
         }
       });

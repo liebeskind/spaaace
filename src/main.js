@@ -9,7 +9,7 @@ import SpaaaceServerEngine from "./server/SpaaaceServerEngine.js";
 import SpaaaceGameEngine from "./common/SpaaaceGameEngine.js";
 import { getAssetAndDataObject } from "./MetaverseCloudIntegrations/rtsdk";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 const INDEX = path.join(__dirname, "../dist/index.html");
 
 // define routes and socket
