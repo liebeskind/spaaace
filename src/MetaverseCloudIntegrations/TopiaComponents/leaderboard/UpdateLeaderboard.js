@@ -41,9 +41,9 @@ const updateHighScores = async (req, sanitizedArray) => {
   const { highScores } = dataObject;
 
   // Don't update high score if the lowest high score is higher than the top current score.
-  if (highScores[2] && sanitizedArray[0].score < highScores[2].score) return;
+  if (highScores && highScores[2] && sanitizedArray && sanitizedArray[0].score < highScores[2].score) return;
 
-  let newArray = sanitizedArray.concat(highScores);
+  let newArray = highScores ? sanitizedArray.concat(highScores) : sanitizedArray;
   let sortedArray = newArray.sort((a, b) => {
     return b.score - a.score;
   });
@@ -97,8 +97,8 @@ function dedupe(arr) {
     const item = arr[i];
     if (item) {
       const id = item.id;
-      // Remove duplicate player IDs
-      if (!rv[id]) rv[id] = item;
+      // Remove duplicate player IDs and prevent score of 0 from being in high score array.
+      if (!rv[id] && item.score) rv[id] = item;
     }
   }
   const dedupedArray = Object.keys(rv).map((id) => rv[id]);

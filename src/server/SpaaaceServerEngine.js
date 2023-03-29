@@ -58,7 +58,7 @@ export default class SpaaaceServerEngine extends ServerEngine {
 
     // Only update leaderboard once every 5 seconds.
     const debounceLeaderboard = debounce(
-      4000,
+      2000,
       (leaderboardArray, req, username) => {
         console.log(`${username} updating leaderboard`, leaderboardArray);
         updateLeaderboard({ leaderboardArray, req });
@@ -80,7 +80,7 @@ export default class SpaaaceServerEngine extends ServerEngine {
       return;
     }
 
-    if (!this.rooms || !this.rooms[roomName]) super.createRoom(roomName);
+    if (!this.rooms || !this.rooms[roomName]) await super.createRoom(roomName);
 
     // Prevent race condition of creating room above.
     // setTimeout(() => super.assignPlayerToRoom(socket.playerId, roomName), 1000);
