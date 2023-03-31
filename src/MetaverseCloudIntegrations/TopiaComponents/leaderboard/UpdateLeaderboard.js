@@ -1,10 +1,19 @@
 import moment from "moment";
-import { throttle } from "throttle-debounce";
-import { getAssetAndDataObject } from "../../rtsdk";
+import { getAssetAndDataObject, World } from "../../rtsdk";
 import { updateText } from "../text";
 import { leaderboardLength } from "./LeaderboardManager";
 
 export const updateLeaderboard = async ({ leaderboardArray, req }) => {
+  // Check whether there is a deployed leaderboard and, if not, don't do anything.
+  const uniqueName = `multiplayer_leaderboard_${req.body.assetId}`;
+  const world = World.create(urlSlug, { credentials: req.body });
+  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+    isPartial: true,
+    uniqueName,
+  });
+  let leaderboardExists = false;
+  if (droppedAssets && droppedAssets.length) leaderboardExists = true;
+
   let sanitizedArray = [];
   const date = new Date().valueOf();
   for (var i = 0; i < leaderboardLength; i++) {
@@ -18,23 +27,25 @@ export const updateLeaderboard = async ({ leaderboardArray, req }) => {
       kills = score.toString() || "0";
       sanitizedArray.push({ id, score, name, date });
     }
-    updateText({
-      req,
-      text: name,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
-    });
+    if (leaderboardExists)
+      updateText({
+        req,
+        text: name,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
+      });
     // Update scores
-    updateText({
-      req,
-      text: kills,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
-    });
+    if (leaderboardExists)
+      updateText({
+        req,
+        text: kills,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
+      });
   }
 
-  updateHighScores(req, sanitizedArray);
+  updateHighScores(req, sanitizedArray, leaderboardExists);
 };
 
-const updateHighScores = async (req, sanitizedArray) => {
+const updateHighScores = async (req, sanitizedArray, leaderboardExists) => {
   const arcadeAsset = await getAssetAndDataObject(req); // This seems to be creating issues with API
   if (!arcadeAsset) return;
   const { dataObject } = arcadeAsset;
@@ -64,23 +75,26 @@ const updateHighScores = async (req, sanitizedArray) => {
       date = moment(parseInt(highScoreArray[i].date)).fromNow();
     }
 
-    updateText({
-      req,
-      text: name,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topPlayerName_${i}`,
-    });
+    if (leaderboardExists)
+      updateText({
+        req,
+        text: name,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topPlayerName_${i}`,
+      });
 
-    updateText({
-      req,
-      text: date,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topDate_${i}`,
-    });
+    if (leaderboardExists)
+      updateText({
+        req,
+        text: date,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topDate_${i}`,
+      });
 
-    updateText({
-      req,
-      text: scoreString,
-      uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topScore_${i}`,
-    });
+    if (leaderboardExists)
+      updateText({
+        req,
+        text: scoreString,
+        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_topScore_${i}`,
+      });
   }
 
   try {
