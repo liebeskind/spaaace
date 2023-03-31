@@ -22,7 +22,7 @@ export const createText = async ({ pos, req, text, textColor, textSize, textWidt
     );
     return textAsset;
   } catch (e) {
-    console.log("Error creating text", e.data.errors || e);
+    console.log("Error creating text", e?.data?.errors || e);
   }
 };
 
@@ -48,7 +48,7 @@ export const updateText = async ({ req, text, textOptions = {}, uniqueName }) =>
   } catch (e) {
     // Don't need this console log.  Include it for dx, but it'll hit pretty frequently.
     // console.log("Error updating text", e);
-    console.log("Error updating text", e.data.errors || e);
+    console.log("Error updating text", e?.data?.errors || e);
     // rej();
   }
   // });

@@ -46,7 +46,7 @@ export const updateLeaderboard = async ({ leaderboardArray, req }) => {
 
     updateHighScores(req, sanitizedArray, leaderboardExists);
   } catch (e) {
-    console.log("Error updating leaderboard", e);
+    console.error("Error updating leaderboard", e?.data?.errors || e);
   }
 };
 
@@ -105,7 +105,7 @@ const updateHighScores = async (req, sanitizedArray, leaderboardExists) => {
   try {
     arcadeAsset.updateDroppedAssetDataObject({ highScores: highScoreArray });
   } catch (e) {
-    console.log("Cannot update dropped asset", e);
+    console.error("Cannot update dropped asset", e);
   }
 };
 
