@@ -7,42 +7,47 @@ export const updateLeaderboard = async ({ leaderboardArray, req }) => {
   // Check whether there is a deployed leaderboard and, if not, don't do anything.
   const uniqueName = `multiplayer_leaderboard_${req.body.assetId}`;
   const world = World.create(req.body.urlSlug, { credentials: req.body });
-  const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
-    isPartial: true,
-    uniqueName,
-  });
-  let leaderboardExists = false;
-  if (droppedAssets && droppedAssets.length) leaderboardExists = true;
+  try {
+    const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
+      isPartial: true,
+      uniqueName,
+    });
 
-  let sanitizedArray = [];
-  const date = new Date().valueOf();
-  for (var i = 0; i < leaderboardLength; i++) {
-    // Update players
-    let name = "-";
-    let kills = "-";
-    if (leaderboardArray[i]) {
-      const score = leaderboardArray[i].data.kills;
-      const id = leaderboardArray[i].id;
-      name = leaderboardArray[i].data.name;
-      kills = score.toString() || "0";
-      sanitizedArray.push({ id, score, name, date });
+    let leaderboardExists = false;
+    if (droppedAssets && droppedAssets.length) leaderboardExists = true;
+
+    let sanitizedArray = [];
+    const date = new Date().valueOf();
+    for (var i = 0; i < leaderboardLength; i++) {
+      // Update players
+      let name = "-";
+      let kills = "-";
+      if (leaderboardArray[i]) {
+        const score = leaderboardArray[i].data.kills;
+        const id = leaderboardArray[i].id;
+        name = leaderboardArray[i].data.name;
+        kills = score.toString() || "0";
+        sanitizedArray.push({ id, score, name, date });
+      }
+      if (leaderboardExists)
+        updateText({
+          req,
+          text: name,
+          uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
+        });
+      // Update scores
+      if (leaderboardExists)
+        updateText({
+          req,
+          text: kills,
+          uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
+        });
     }
-    if (leaderboardExists)
-      updateText({
-        req,
-        text: name,
-        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_playerName_${i}`,
-      });
-    // Update scores
-    if (leaderboardExists)
-      updateText({
-        req,
-        text: kills,
-        uniqueName: `multiplayer_leaderboard_${req.body.assetId}_score_${i}`,
-      });
-  }
 
-  updateHighScores(req, sanitizedArray, leaderboardExists);
+    updateHighScores(req, sanitizedArray, leaderboardExists);
+  } catch (e) {
+    console.log("Error updating leaderboard", e);
+  }
 };
 
 const updateHighScores = async (req, sanitizedArray, leaderboardExists) => {
