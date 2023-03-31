@@ -6,7 +6,7 @@ import { leaderboardLength } from "./LeaderboardManager";
 export const updateLeaderboard = async ({ leaderboardArray, req }) => {
   // Check whether there is a deployed leaderboard and, if not, don't do anything.
   const uniqueName = `multiplayer_leaderboard_${req.body.assetId}`;
-  const world = World.create(urlSlug, { credentials: req.body });
+  const world = World.create(req.body.urlSlug, { credentials: req.body });
   const droppedAssets = await world.fetchDroppedAssetsWithUniqueName({
     isPartial: true,
     uniqueName,
